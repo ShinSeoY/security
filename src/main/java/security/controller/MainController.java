@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import security.domain.User;
+import security.annotation.LoginUser;
+import security.domain.MyUser;
 import security.service.UserService;
 
 import java.util.Map;
@@ -12,31 +13,36 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api")
 public class MainController {
 
     private final UserService userService;
 
-    @GetMapping("")
+    @GetMapping("/private/index")
     @ResponseStatus(HttpStatus.OK)
-    public String index() {
-        log.info("--------come");
-        boolean isShow = true;
-        if (isShow) {
-            return "success";
-        } else {
-            throw new RuntimeException("exception...");
-        }
+    public Long privateIndex(@LoginUser MyUser myUser) {
+        return myUser.getId();
+    }
+
+    @GetMapping("/public/index")
+    @ResponseStatus(HttpStatus.OK)
+    public Long publicIndex(@LoginUser MyUser myUser) {
+        return myUser.getId();
     }
 
     @PostMapping("/user")
     @ResponseStatus(HttpStatus.OK)
-    public User createUser(@RequestBody Map<String, Object> user) {
+    public MyUser createUser(@RequestBody Map<String, Object> user) {
         return userService.createUser(
-                User.builder()
+                MyUser.builder()
                         .username((user.get("username")).toString())
                         .password((user.get("password")).toString())
                         .build()
         );
+    }
+
+    @PostMapping("/public/login")
+    public String login(@RequestBody Map<String, Object> loginDto){
+        return userService.login(loginDto);
     }
 }
