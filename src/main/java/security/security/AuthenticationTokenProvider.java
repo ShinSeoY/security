@@ -1,6 +1,7 @@
 package security.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -73,22 +74,43 @@ public class AuthenticationTokenProvider {
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(expiration))
                 .addClaims(payload)
-                .signWith(SignatureAlgorithm.HS256, jwtKey)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Authentication getAuthentication(final String accessToken) {
         try {
             Claims claims = (Claims) (Jwts.parserBuilder().setSigningKey(key).build().parse(accessToken).getBody());
-            if (claims.get("auth") == null) {
-                throw new RuntimeException("NO_AUTH");
-            }
+//            if (claims.get("auth") == null) {
+//                throw new RuntimeException("NO_AUTH");
+//            }
             Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString()
                     .split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
             UserDetails principal = new User(claims.getSubject(), "", authorities);
 
             return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+        return null;
+    }
+
+    public String getUsername(final String jwtString) {
+        Map<String, Object> payload = getPayload(jwtString);
+        return (String) payload.get("username");
+    }
+
+    public Map<String, Object> getPayload(final String jwtString) {
+        try {
+            Claims claims = (Claims) (Jwts.parserBuilder().setSigningKey(key).build().parse(jwtString).getBody());
+            Map<String, Object> payload = new HashMap<>();
+            for (String key : claims.keySet()) {
+                payload.put(key, claims.get(key));
+            }
+            return payload;
+        } catch (JwtException e) {
+            log.error(e.toString());
         } catch (Exception e) {
             log.error(e.toString());
         }

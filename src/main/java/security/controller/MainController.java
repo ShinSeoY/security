@@ -18,10 +18,9 @@ public class MainController {
 
     private final UserService userService;
 
-    @GetMapping("/private/index")
-    @ResponseStatus(HttpStatus.OK)
-    public Long privateIndex(@LoginUser MyUser myUser) {
-        return myUser.getId();
+    @PostMapping("/public/login")
+    public String login(@RequestBody Map<String, Object> loginDto){
+        return userService.login(loginDto);
     }
 
     @GetMapping("/public/index")
@@ -41,8 +40,4 @@ public class MainController {
         );
     }
 
-    @PostMapping("/public/login")
-    public String login(@RequestBody Map<String, Object> loginDto){
-        return userService.login(loginDto);
-    }
 }
