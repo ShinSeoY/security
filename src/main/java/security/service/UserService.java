@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import security.domain.MyUser;
+import security.dto.LoginDto;
+import security.exception.error.InvalidValueException;
 import security.repository.UserRepository;
 import security.security.AuthenticationTokenProvider;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,13 +23,13 @@ public class UserService {
         return null;
     }
 
-    public String login(Map<String, Object> loginDto) {
-        MyUser myUser = userRepository.findByUsernameAndPassword(String.valueOf(loginDto.get("username")), String.valueOf(loginDto.get("password")));
+    public String login(LoginDto loginDto) {
+        MyUser myUser = userRepository.findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (myUser != null) {
             String jwtToken = authenticationTokenProvider.generateJwtToken(myUser);
             return jwtToken;
         } else {
-            return "NONE_MATCH_USER";
+            throw new InvalidValueException();
         }
     }
 
