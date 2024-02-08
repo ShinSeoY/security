@@ -10,6 +10,7 @@ import security.domain.MyUser;
 import security.dto.LoginDto;
 import security.service.UserService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 @Slf4j
@@ -21,8 +22,9 @@ public class MainController {
     private final UserService userService;
 
     @PostMapping("/public/login")
-    public ResponseEntity login(@RequestBody LoginDto loginDto){
-            return new ResponseEntity<>(userService.login(loginDto), HttpStatus.OK);
+    public ResponseEntity login(@RequestBody LoginDto loginDto, HttpServletResponse httpServletResponse) {
+        userService.login(loginDto, httpServletResponse);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/public/index")

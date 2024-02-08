@@ -27,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session을 사용하지 않음
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/**").permitAll()
-//                .antMatchers("/api/private/**").authenticated()
+                .antMatchers("/api/public/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new AuthenticationTokenFilter(provider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
         // UsernamePasswordAuthenticationFilter에 가기 전에 직접 만든 JwtAuthenticationFilter을 실행하겠다.
@@ -38,4 +38,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder userPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

@@ -5,9 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import security.domain.MyUser;
 import security.dto.LoginDto;
+import security.dto.TokenInfo;
 import security.exception.error.InvalidValueException;
 import security.repository.UserRepository;
 import security.security.AuthenticationTokenProvider;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Service
@@ -23,11 +26,12 @@ public class UserService {
         return null;
     }
 
-    public String login(LoginDto loginDto) {
+    public void login(LoginDto loginDto, HttpServletResponse httpServletResponse) {
         MyUser myUser = userRepository.findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (myUser != null) {
-            String jwtToken = authenticationTokenProvider.generateJwtToken(myUser);
-            return jwtToken;
+            TokenInfo tokenInfo = authenticationTokenProvider.generateJwtToken(myUser, httpServletResponse);
+
+            System.out.println("tokenInfo......" + tokenInfo);
         } else {
             throw new InvalidValueException();
         }
