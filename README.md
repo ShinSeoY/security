@@ -13,9 +13,9 @@ JUnit <br/>
 <br/>
 
 ## 적용 기술
-- JPA를 사용한 회원가입
-- 로그인 시 access token, refresh token cookie 에 저장
-- 로그인 시 refresh token 및 userid redis에 저장
-- custom annotation인 @LoginUser가 달린 api 호출시 쿠키 검증 및 유저 검증
+> - JPA를 사용한 회원가입
+> - 로그인 시 access token, refresh token cookie 에 저장
+> - 로그인 시 refresh token 및 userid redis에 저장
+> - custom annotation인 @LoginUser가 달린 api 호출시 쿠키 검증 및 유저 검증
 
 
